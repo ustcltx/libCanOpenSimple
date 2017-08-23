@@ -334,7 +334,6 @@ namespace libCanopenSimple
 
                 if (handle != IntPtr.Zero)
                 {
-
                     rxthread = new System.Threading.Thread(rxthreadworker);
                     rxthread.Start();
                     return true;

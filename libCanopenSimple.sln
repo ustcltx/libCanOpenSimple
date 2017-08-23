@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libCanopenSimple", "libCanopenSimple.csproj", "{2FB81ADD-258F-4135-A9B9-17E2ACA2448E}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -28,6 +28,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriverTest", "DriverTest\DriverTest.csproj", "{E08A680D-F4E2-477B-AF48-D4B9AA839CD8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTest", "SimpleTest\SimpleTest.csproj", "{1B9A1C95-6C73-4A1E-828D-A51705A8B505}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "can_qm_rs232_win32", "canfestival\drivers\can_qm_rs232_win32\can_qm_rs232_win32.vc10.vcxproj", "{0B85A50A-25E6-4F17-B5F4-425132CAE5B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +103,12 @@ Global
 		{1B9A1C95-6C73-4A1E-828D-A51705A8B505}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1B9A1C95-6C73-4A1E-828D-A51705A8B505}.Release|x86.ActiveCfg = Release|Any CPU
 		{1B9A1C95-6C73-4A1E-828D-A51705A8B505}.Release|x86.Build.0 = Release|Any CPU
+		{0B85A50A-25E6-4F17-B5F4-425132CAE5B2}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{0B85A50A-25E6-4F17-B5F4-425132CAE5B2}.Debug|x86.ActiveCfg = Debug|Win32
+		{0B85A50A-25E6-4F17-B5F4-425132CAE5B2}.Debug|x86.Build.0 = Debug|Win32
+		{0B85A50A-25E6-4F17-B5F4-425132CAE5B2}.Release|Any CPU.ActiveCfg = Release|Win32
+		{0B85A50A-25E6-4F17-B5F4-425132CAE5B2}.Release|x86.ActiveCfg = Release|Win32
+		{0B85A50A-25E6-4F17-B5F4-425132CAE5B2}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

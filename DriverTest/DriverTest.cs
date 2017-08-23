@@ -32,9 +32,9 @@ namespace DriverTest
         {
 
             //Change these to load correct driver and connect it to correct bus  
-            string driver = "can_usb_win32";
-            string bus = "COM4";
-            BUSSPEED bitrate = BUSSPEED.BUS_500Kbit;
+            string driver = "can_qm_rs232_win32";
+            string bus = "COM1";
+            BUSSPEED bitrate = BUSSPEED.BUS_1Mbit;
 
 
             try

@@ -30,9 +30,9 @@ namespace SimpleTest
         {
 
             //Change these to load correct driver and connect it to correct bus  
-            string driver = "can_usb_win32";
-            string bus = "COM4";
-            BUSSPEED bitrate = BUSSPEED.BUS_500Kbit;
+            string driver = "can_qm_rs232_win32";
+            string bus = "COM1";
+            BUSSPEED bitrate = BUSSPEED.BUS_1Mbit;
 
             try
             {
@@ -43,7 +43,7 @@ namespace SimpleTest
                 lco.pdoevent += Lco_pdoevent;
                 lco.sdoevent += Lco_sdoevent;
 
-                lco.open(4, bitrate, driver);
+                lco.open(1, bitrate, driver);
 
                 Console.WriteLine("listening for any traffic");
 
@@ -52,6 +52,10 @@ namespace SimpleTest
                 System.Threading.Thread.Sleep(5000);
 
                 lco.NMT_ResetNode(); //reset all
+
+                lco.NMT_start(1);
+
+                lco.SDOread(1, 0x1710, 0, null);
 
                 Console.WriteLine("Press any key to exit test..");
 
