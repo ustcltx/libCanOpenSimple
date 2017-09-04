@@ -105,7 +105,7 @@ namespace libCanopenSimple
             if (Handle == IntPtr.Zero)
             {
                 int errorCode = Marshal.GetLastWin32Error();
-                throw new Exception(string.Format("Failed to load library (ErrorCode: {0})", errorCode));
+                throw new Exception(string.Format("Failed to load library (ErrorCode: {0},Message: {1})", errorCode,new System.ComponentModel.Win32Exception(errorCode).Message));
             }
 
             IntPtr funcaddr;
@@ -409,14 +409,19 @@ namespace libCanopenSimple
         /// <param name="msg">CanOpen message to be sent</param>
         public void cansend(Message msg)
         {
+            try
+            {
+                IntPtr msgptr = Marshal.AllocHGlobal(Marshal.SizeOf(msg));
+                Marshal.StructureToPtr(msg, msgptr, false);
 
-            IntPtr msgptr = Marshal.AllocHGlobal(Marshal.SizeOf(msg));
-            Marshal.StructureToPtr(msg, msgptr, false);
+                canSend(handle, msgptr);
 
-            canSend(handle, msgptr);
-
-            Marshal.FreeHGlobal(msgptr);
-
+                Marshal.FreeHGlobal(msgptr);
+            }
+            catch (System.Exception ex)
+            {
+                var s = ex;
+            }
         }
 
         /// <summary>
@@ -429,7 +434,7 @@ namespace libCanopenSimple
 
                 DriverInstance.Message rxmsg = canreceive();
 
-                if (rxmsg.len != 0)
+                if (rxmsg.len != 0 || rxmsg.cob_id == 0x80)
                 {
                     if (rxmessage != null)
                         rxmessage(rxmsg);

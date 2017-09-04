@@ -62,29 +62,41 @@ namespace libCanopenSimple
         {
             cob = msg.cob_id;
             len = msg.len;
-            data = new byte[len];
+            if (len > 0)
+            {
+                data = new byte[len];
 
-            byte[] temp = BitConverter.GetBytes(msg.data);
-            Array.Copy(temp, data, msg.len);
+                byte[] temp = BitConverter.GetBytes(msg.data);
+                Array.Copy(temp, data, msg.len);
+            }
         }
 
         /// <summary>
         /// Convert to a CanFestival message
         /// </summary>
         /// <returns>CanFestival message</returns>
-        public DriverInstance.Message ToMsg()
+        public DriverInstance.Message ToMsg(bool IsRTR = false)
         {
             DriverInstance.Message msg = new DriverInstance.Message();
             msg.cob_id = cob;
-            msg.len = len;
-            msg.rtr = 0;
-
-            byte[] temp = new byte[8];
-            Array.Copy(data, temp, len);
-            msg.data = BitConverter.ToUInt64(temp, 0);
+            if (IsRTR)
+            {
+                msg.len = 0;
+                msg.rtr = 1;
+            }
+            else
+            {
+                msg.len = len;
+                msg.rtr = 0;
+                if (len > 0)
+                {
+                    byte[] temp = new byte[8];
+                    Array.Copy(data, temp, len);
+                    msg.data = BitConverter.ToUInt64(temp, 0);
+                }
+            }
 
             return msg;
-
         }
 
         /// <summary>
@@ -147,7 +159,10 @@ namespace libCanopenSimple
         {
 
             driver = loader.loaddriver(drivername);
-            driver.open(string.Format("COM{0}", comport), speed);
+            if (!driver.open(string.Format("COM{0}", comport), speed))
+            {
+                throw new Exception(string.Format("无法打开 COM{0}", comport));
+            }
 
             driver.rxmessage += Driver_rxmessage;
 
@@ -174,9 +189,9 @@ namespace libCanopenSimple
         /// Send a Can packet on the bus
         /// </summary>
         /// <param name="p"></param>
-        public void SendPacket(canpacket p)
+        public void SendPacket(canpacket p,bool IsRTR = false)
         {
-            DriverInstance.Message msg = p.ToMsg();
+            DriverInstance.Message msg = p.ToMsg(IsRTR);
 
             driver.cansend(msg);
 
@@ -306,10 +321,9 @@ namespace libCanopenSimple
                     }
 
                     //NMT
-                    if (cp.cob > 0x700 && cp.cob <= 0x77f)
+                    if (cp.cob > 0x700 && cp.cob <= 0x77f && cp.data !=null && cp.data.Length > 0)
                     {
                         byte node = (byte)(cp.cob & 0x07F);
-
                         nmtstate[node].changestate((NMTState.e_NMTState)cp.data[0]);
                         nmtstate[node].lastping = DateTime.Now;
 
@@ -636,12 +650,26 @@ namespace libCanopenSimple
             SendPacket(p);
         }
 
-        public bool checkguard(int node, TimeSpan maxspan)
+        public void GuardRTRRequest(byte nodeid = 0)
+        {
+            canpacket p = new canpacket();
+            p.cob = (ushort)(0x0700 + (int)nodeid);
+            SendPacket(p,true);
+        }
+
+        public bool CheckGuard(int node, TimeSpan maxspan)
         {
             if (DateTime.Now - nmtstate[(ushort)node].lastping > maxspan)
                 return false;
 
             return true;
+        }
+
+        public void SYNC_Send()
+        {
+            canpacket p = new canpacket();
+            p.cob = 0x0080;
+            SendPacket(p);
         }
 
         #endregion
