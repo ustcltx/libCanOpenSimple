@@ -155,8 +155,12 @@ namespace libCanopenSimple
         /// <param name="comport">COM PORT number</param>
         /// <param name="speed">CAN Bit rate</param>
         /// <param name="drivername">Driver to use</param>
-        public void open(int comport, BUSSPEED speed, string drivername)
+        public void open(int comport, BUSSPEED speed, string drivername,string dir = "")
         {
+            if(!string.IsNullOrEmpty(dir))
+            {
+                drivername = System.IO.Path.Combine(dir, drivername);
+            }
 
             driver = loader.loaddriver(drivername);
             if (!driver.open(string.Format("COM{0}", comport), speed))
