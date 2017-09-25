@@ -408,20 +408,18 @@ namespace libCanopenSimple
         /// </summary>
         /// <param name="msg">CanOpen message to be sent</param>
         public void cansend(Message msg)
-        {
-            IntPtr msgptr = Marshal.AllocHGlobal(Marshal.SizeOf(msg));
+        {            
             try
             {
-                Marshal.StructureToPtr(msg, msgptr, true);
+                IntPtr msgptr = Marshal.AllocHGlobal(Marshal.SizeOf(msg));
+                Marshal.StructureToPtr(msg, msgptr, false);
+                if (handle == IntPtr.Zero) return;
                 canSend(handle, msgptr);
+                Marshal.FreeHGlobal(msgptr);
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
                 var s = ex;
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(msgptr);
             }
         }
 
