@@ -413,7 +413,6 @@ namespace libCanopenSimple
             {
                 IntPtr msgptr = Marshal.AllocHGlobal(Marshal.SizeOf(msg));
                 Marshal.StructureToPtr(msg, msgptr, false);
-                if (handle == IntPtr.Zero) return;
                 canSend(handle, msgptr);
                 Marshal.FreeHGlobal(msgptr);
             }

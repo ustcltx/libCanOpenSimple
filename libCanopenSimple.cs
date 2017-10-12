@@ -189,7 +189,7 @@ namespace libCanopenSimple
             return driver.isOpen();
         }
 
-        private readonly object _lockObj = new object(); 
+        private static readonly object _lockObj = new object(); 
         /// <summary>
         /// Send a Can packet on the bus
         /// </summary>
