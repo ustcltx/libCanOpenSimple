@@ -1,14 +1,22 @@
-*/bin/Debug
-*/obj/Debug
-*/bin/Release
-*/obj/Release
-/bin/Debug
-/bin/Release
-/obj/*
-.vs/*
+# User-specific files
+*.suo
+*.user
+*.sln.docstates
+
+# Build results
+
+[Dd]ebug/
+[Rr]elease/
+x64/
+build/
+[Bb]in/
+[Oo]bj/
+
+.vs
 *.pdb
 *.dll
 *.ilk
 *.exp
 *.lib
 /libCanopenSimple.VC.db
+*.sdf
