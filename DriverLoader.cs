@@ -380,45 +380,46 @@ namespace libCanopenSimple
             brdptr = IntPtr.Zero;
         }
 
+        static readonly object _lock_canreceive = new object();
+
         /// <summary>
         /// Message pump function. This should be called in a fast loop
         /// </summary>
         /// <returns></returns>
         public Message canreceive()
         {
+            lock (_lock_canreceive)
+            {
+                // I think we can do better here and not allocated/deallocate to heap every pump loop
+                Message msg = new Message();
 
-            // I think we can do better here and not allocated/deallocate to heap every pump loop
-            Message msg = new Message();
+                IntPtr msgptr = Marshal.AllocHGlobal(Marshal.SizeOf(msg));
+                Marshal.StructureToPtr(msg, msgptr, false);
 
-            IntPtr msgptr = Marshal.AllocHGlobal(Marshal.SizeOf(msg));
-            Marshal.StructureToPtr(msg, msgptr, false);
+                byte status = canReceive(handle, msgptr);
 
-            byte status = canReceive(handle, msgptr);
+                msg = (Message)Marshal.PtrToStructure(msgptr, typeof(Message));
 
-            msg = (Message)Marshal.PtrToStructure(msgptr, typeof(Message));
+                Marshal.FreeHGlobal(msgptr);
 
-            Marshal.FreeHGlobal(msgptr);
-
-            return msg;
+                return msg;
+            }
 
         }
 
+        static readonly object _lock_cansend = new object();
         /// <summary>
         /// Send a CanOpen mesasge to the hardware device
         /// </summary>
         /// <param name="msg">CanOpen message to be sent</param>
         public void cansend(Message msg)
-        {            
-            try
+        {
+            lock (_lock_cansend)
             {
                 IntPtr msgptr = Marshal.AllocHGlobal(Marshal.SizeOf(msg));
                 Marshal.StructureToPtr(msg, msgptr, false);
                 canSend(handle, msgptr);
                 Marshal.FreeHGlobal(msgptr);
-            }
-            catch (Exception ex)
-            {
-                var s = ex;
             }
         }
 

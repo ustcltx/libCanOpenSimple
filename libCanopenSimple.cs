@@ -188,24 +188,20 @@ namespace libCanopenSimple
 
             return driver.isOpen();
         }
-
-        private static readonly object _lockObj = new object(); 
+ 
         /// <summary>
         /// Send a Can packet on the bus
         /// </summary>
         /// <param name="p"></param>
         public void SendPacket(canpacket p,bool IsRTR = false)
         {
-            lock (_lockObj)
+            DriverInstance.Message msg = p.ToMsg(IsRTR);
+
+            driver.cansend(msg);
+
+            if (echo == true)
             {
-                DriverInstance.Message msg = p.ToMsg(IsRTR);
-
-                driver.cansend(msg);
-
-                if (echo == true)
-                {
-                    Driver_rxmessage(msg);
-                }
+                Driver_rxmessage(msg);
             }
         }
 

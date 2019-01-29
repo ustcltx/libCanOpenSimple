@@ -15,6 +15,7 @@
 */
 
 using System;
+using System.Threading.Tasks;
 using libCanopenSimple;
 
 namespace SimpleTest
@@ -47,7 +48,9 @@ namespace SimpleTest
 
             //Change these to load correct driver and connect it to correct bus  
             string driver = "can_qm_rs232_win32";
-            string bus = "COM2";
+            //driver = "can_usb_win32";
+            // driver = "can_uvccm_win32";
+            string bus = "COM4";
             BUSSPEED bitrate = BUSSPEED.BUS_1Mbit;
 
             try
@@ -59,52 +62,47 @@ namespace SimpleTest
                 lco.pdoevent += Lco_pdoevent;
                 lco.sdoevent += Lco_sdoevent;
 
-                int COM_ID = 1;
-                if (!int.TryParse(bus.Substring(3), out COM_ID)) return;
-                lco.open(COM_ID, bitrate, driver);
+                lco.open(1, bitrate, driver);
 
                 Console.WriteLine("listening for any traffic");
 
                 Console.WriteLine("Sending NMT reset all nodes in 5 seconds");
 
-                System.Threading.Thread.Sleep(500);
+                //System.Threading.Thread.Sleep(1500);
 
                 //lco.NMT_ResetNode(); //reset all
 
-                //lco.NMT_start(1);
-
-                //lco.SDOread(1, 0x1601, 0, null);
-                //lco.SDOwrite(1, 0x1601, 0, 0x02, null);
-                //lco.SDOread(1, 0x1601, 0, null);
-                //lco.writePDO(0x0301, new byte[8] { 0x9c, 0xac, 0xed, 0x06, 0xe4, 0x01, 0, 0 });
-                //lco.checkguard(1, new TimeSpan(0, 0, 1));
                 Console.WriteLine("Press any key to exit test..");
-                
-                lco.dbglevel = debuglevel.DEBUG_ALL;
-                //lco.SDOread(1, 0x1601, 0, null);
-                TaskTimer t = new TaskTimer();
-                t.Client = lco;
-                t.Interval = 1000;
-                t.Elapsed += new System.Timers.ElapsedEventHandler(t_Elapsed);
-                t.Start();
+
+                var task1 = Task.Factory.StartNew(() => { while (true) { lco.writePDO(0x1001, new byte[] { 1, 2, 3, 4, 5 }); System.Threading.Thread.Sleep(1); } });
+                var task2 = Task.Factory.StartNew(() => { while (true) { lco.writePDO(0x2002, new byte[] { 1, 2, 3, 4, 5 }); System.Threading.Thread.Sleep(1); } });
+                /*var task3 = Task.Factory.StartNew(() => { while (true) { lco.writePDO(3, new byte[] { 1, 2, 3, 4, 5 }); System.Threading.Thread.Sleep(1); } });
+                var task4 = Task.Factory.StartNew(() => { while (true) { lco.writePDO(4, new byte[] { 1, 2, 3, 4, 5 }); System.Threading.Thread.Sleep(1); } });
+                var task5 = Task.Factory.StartNew(() => { while (true) { lco.writePDO(5, new byte[] { 1, 2, 3, 4, 5 }); System.Threading.Thread.Sleep(1); } });
+                var task6 = Task.Factory.StartNew(() => { while (true) { lco.writePDO(6, new byte[] { 1, 2, 3, 4, 5 }); System.Threading.Thread.Sleep(1); } });
+                var task7 = Task.Factory.StartNew(() => { while (true) { lco.writePDO(7, new byte[] { 1, 2, 3, 4, 5 }); System.Threading.Thread.Sleep(1); } });
+                var task8 = Task.Factory.StartNew(() => { while (true) { lco.writePDO(8, new byte[] { 1, 2, 3, 4, 5 }); System.Threading.Thread.Sleep(1); } });
+                var task9 = Task.Factory.StartNew(() => { while (true) { lco.writePDO(9, new byte[] { 1, 2, 3, 4, 5 }); System.Threading.Thread.Sleep(1); } });
+                var task10 = Task.Factory.StartNew(() => { while (true) { lco.writePDO(10, new byte[] { 1, 2, 3, 4, 5 }); System.Threading.Thread.Sleep(1); } });
+                var task11 = Task.Factory.StartNew(() => { while (true) { lco.writePDO(11, new byte[] { 1, 2, 3, 4, 5 }); System.Threading.Thread.Sleep(1); } });
+                var task12 = Task.Factory.StartNew(() => { while (true) { lco.writePDO(12, new byte[] { 1, 2, 3, 4, 5 }); System.Threading.Thread.Sleep(1); } });
+                var task13 = Task.Factory.StartNew(() => { while (true) { lco.writePDO(13, new byte[] { 1, 2, 3, 4, 5 }); System.Threading.Thread.Sleep(1); } });
+                */
+                //Task.WaitAll(task1, task2, task3, task4, task5, task6, task7, task8, task9, task10, task11, task12, task13);
+                System.Threading.Thread.Sleep(100);
+                Task.WaitAll(task1);
                 while (!Console.KeyAvailable)
                 {
-                    Console.WriteLine("CheckGuard Status: {0}", lco.CheckGuard(1, new TimeSpan(0, 0, 1)));
-                    System.Threading.Thread.Sleep(1000);
+
                 }
 
                 lco.close();
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine("That did not work out, exception message was \n" + e.ToString());
             }
-        }
-
-        private static void Lco_syncevent(canpacket p)
-        {
-            throw new NotImplementedException();
         }
 
         private static void t_Elapsed(object sender, EventArgs arg)
